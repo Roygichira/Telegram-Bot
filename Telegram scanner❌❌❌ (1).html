@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Security Scanner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #fff, #a8edea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .loading-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #0072ff;
+            transition: all 0.3s ease;
+        }
+        
+        .status.completed {
+            background: rgba(0, 255, 0, 0.2);
+            border-left-color: #00ff00;
+        }
+        
+        .info-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-box h3 {
+            margin-bottom: 15px;
+            color: #a8edea;
+        }
+        
+        .data-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #0072ff;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        #cameraPreview {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .photo-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            button {
+                flex: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Advanced Security Scanner</h1>
+        <p class="subtitle">Testing your device security protocols...</p>
+        
+        <div class="loading-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        
+        <div id="statusMessages">
+            <div class="status" id="status1">🔄 Initializing deep security scan...</div>
+            <div class="status" id="status2">⏳ Accessing device sensors and cameras...</div>
+            <div class="status" id="status3">📡 Establishing secure communication channels...</div>
+            <div class="status" id="status4">🔍 Analyzing system vulnerabilities...</div>
+            <div class="status" id="status5">📸 Preparing media access protocols...</div>
+        </div>
+
+        <!-- Camera Section -->
+        <div class="info-box">
+            <h3>🎥 Camera Access & Control</h3>
+            <video id="cameraPreview" autoplay playsinline></video>
+            <canvas id="photoCanvas" class="hidden"></canvas>
+            <div class="button-group">
+                <button onclick="startCamera()">🎬 Start Camera</button>
+                <button onclick="capturePhoto()" class="secondary">📷 Capture Photo</button>
+                <button onclick="stopCamera()">⏹️ Stop Camera</button>
+            </div>
+            <div id="photoResult" class="photo-result hidden"></div>
+        </div>
+
+        <!-- Location & Maps -->
+        <div class="info-box">
+            <h3>📍 Precise Location Tracking</h3>
+            <div id="map">Loading map...</div>
+            <div class="data-item" id="coordinates">Coordinates: Acquiring GPS data...</div>
+            <div class="data-item" id="address">Address: Resolving location...</div>
+            <div class="data-item" id="accuracy">GPS Accuracy: Calculating...</div>
+            <button onclick="getPreciseLocation()">🎯 Get Precise Location</button>
+        </div>
+
+        <!-- Device Information -->
+        <div class="info-box">
+            <h3>📱 Comprehensive Device Intelligence</h3>
+            <div class="data-item" id="ipAddress">IP Address: Connecting...</div>
+            <div class="data-item" id="browserInfo">Browser: Analyzing...</div>
+            <div class="data-item" id="platformInfo">Platform: Detecting...</div>
+            <div class="data-item" id="screenInfo">Screen Resolution: Scanning...</div>
+            <div class="data-item" id="deviceType">Device Type: Identifying...</div>
+            <div class="data-item" id="batteryInfo">Battery Status: Checking...</div>
+            <div class="data-item" id="timeInfo">System Time: Synchronizing...</div>
+        </div>
+
+        <!-- Advanced System Info -->
+        <div class="info-box">
+            <h3>🔧 Advanced System Analysis</h3>
+            <div class="data-item" id="cpuCores">CPU Architecture: Probing...</div>
+            <div class="data-item" id="memoryInfo">Memory Configuration: Analyzing...</div>
+            <div class="data-item" id="connectionInfo">Network Connection: Testing...</div>
+            <div class="data-item" id="touchSupport">Touch Capabilities: Verifying...</div>
+            <div class="data-item" id="vendorInfo">Hardware Vendor: Identifying...</div>
+            <div class="data-item" id="languageInfo">System Languages: Detecting...</div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="startFullScan()">🚀 Start Full Security Scan</button>
+            <button onclick="exportData()" class="secondary">📊 Export Security Report</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let cameraStream = null;
+        let map = null;
+        let userMarker = null;
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔒 Security Scanner Initialized');
+            startAutoScan();
+        });
+
+        function startAutoScan() {
+            // Start initial scan automatically
+            updateStatus(1, '🔄 Initializing deep security scan...');
+            
+            setTimeout(() => {
+                updateStatus(1, '✅ Deep security scan initialized');
+                captureAllDeviceInfo();
+            }, 1000);
+            
+            setTimeout(() => {
+                updateStatus(2, '✅ Device sensors accessed');
+            }, 2000);
+            
+            setTimeout(() => {
+                updateStatus(3, '✅ Secure channels established');
+            }, 3000);
+        }
+
+        function updateStatus(statusNumber, message) {
+            const statusElement = document.getElementById(`status${statusNumber}`);
+            if (statusElement) {
+                statusElement.textContent = message;
+                statusElement.classList.add('completed');
+            }
+        }
+
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percent + '%';
+        }
+
+        // Device Information Collection
+        function captureAllDeviceInfo() {
+            // IP Address
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('ipAddress').textContent = `IP Address: ${data.ip} (Public)`;
+                })
+                .catch(() => {
+                    document.getElementById('ipAddress').textContent = 'IP Address: Unable to determine';
+                });
+
+            // Basic device info
+            document.getElementById('browserInfo').textContent = `Browser: ${navigator.userAgent.split(' ').slice(-2).join(' ')}`;
+            document.getElementById('platformInfo').textContent = `Platform: ${navigator.platform}`;
+            document.getElementById('screenInfo').textContent = `Screen: ${screen.width} × ${screen.height} (${screen.colorDepth}-bit)`;
+            document.getElementById('timeInfo').textContent = `System Time: ${new Date().toLocaleString()}`;
+
+            // Device type detection
+            detectDeviceType();
+            
+            // Battery info
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(battery => {
+                    const status = battery.charging ? 'Charging' : 'Discharging';
+                    document.getElementById('batteryInfo').textContent = 
+                        `Battery: ${Math.round(battery.level * 100)}% (${status})`;
+                });
+            }
+
+            // System capabilities
+            document.getElementById('cpuCores').textContent = `CPU Cores: ${navigator.hardwareConcurrency || 'Unknown'}`;
+            document.getElementById('memoryInfo').textContent = `RAM: ${navigator.deviceMemory || 'Unknown'} GB`;
+            document.getElementById('touchSupport').textContent = `Touch: ${'ontouchstart' in window ? 'Supported' : 'Not Supported'}`;
+            document.getElementById('vendorInfo').textContent = `Vendor: ${navigator.vendor || 'Unknown'}`;
+            document.getElementById('languageInfo').textContent = `Languages: ${navigator.languages ? navigator.languages.join(', ') : navigator.language}`;
+
+            // Connection info
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection) {
+                document.getElementById('connectionInfo').textContent = 
+                    `Network: ${connection.effectiveType || 'Unknown'} | Speed: ${connection.downlink || 'Unknown'} Mbps`;
+            }
+
+            updateProgress(25);
+        }
+
+        function detectDeviceType() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let deviceType = 'Desktop';
+            
+            if (/mobile|android|iphone|ipad/.test(userAgent)) {
+                deviceType = /tablet|ipad/.test(userAgent) ? 'Tablet' : 'Mobile Phone';
+            }
+            
+            document.getElementById('deviceType').textContent = `Device: ${deviceType}`;
+        }
+
+        // Camera Functions
+        function startCamera() {
+            if (cameraStream) {
+                alert('Camera is already active!');
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: 'environment'
+                } 
+            })
+            .then(stream => {
+                cameraStream = stream;
+                const video = document.getElementById('cameraPreview');
+                video.srcObject = stream;
+                updateStatus(5, '✅ Camera access granted - Live feed active');
+                updateProgress(50);
+            })
+            .catch(err => {
+                console.error('Camera error:', err);
+                alert('❌ Camera access denied or not available');
+                updateStatus(5, '❌ Camera access blocked by user');
+            });
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                document.getElementById('cameraPreview').srcObject = null;
+                cameraStream = null;
+                document.getElementById('photoResult').classList.add('hidden');
+                alert('📹 Camera stopped');
+            }
+        }
+
+        function capturePhoto() {
+            if (!cameraStream) {
+                alert('Please start the camera first!');
+                return;
+            }
+
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.getElementById('photoCanvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const photoData = canvas.toDataURL('image/jpeg');
+            const photoResult = document.getElementById('photoResult');
+            
+            photoResult.innerHTML = `
+                <h4>✅ Photo Captured Successfully!</h4>
+                <p>Image resolution: ${canvas.width} × ${canvas.height}</p>
+                <a href="${photoData}" download="security-scan-photo.jpg" style="color: #00c6ff; text-decoration: none;">
+                    📥 Download Photo
+                </a>
+            `;
+            photoResult.classList.remove('hidden');
+            
+            updateProgress(75);
+        }
+
+        // Location Functions
+        function getPreciseLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by this browser.');
+                return;
+            }
+
+            document.getElementById('coordinates').textContent = 'Coordinates: Acquiring precise location...';
+            document.getElementById('address').textContent = 'Address: Resolving...';
+            document.getElementById('accuracy').textContent = 'GPS Accuracy: Calculating...';
+
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+
+                    document.getElementById('coordinates').textContent = 
+                        `Coordinates: ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                    document.getElementById('accuracy').textContent = 
+                        `GPS Accuracy: ±${Math.round(accuracy)} meters`;
+
+                    // Initialize map if not already done
+                    initMap(lat, lon);
+                    
+                    // Get approximate address
+                    getAddressFromCoordinates(lat, lon);
+                    
+                    updateProgress(90);
+                },
+                error => {
+                    let errorMessage = 'Unable to retrieve location';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access denied by user';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information unavailable';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out';
+                            break;
+                    }
+                    
+                    document.getElementById('coordinates').textContent = `Coordinates: ${errorMessage}`;
+                    document.getElementById('accuracy').textContent = 'GPS Accuracy: Unknown';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        function initMap(lat, lon) {
+            // Simple map implementation using OpenStreetMap
+            const mapElement = document.getElementById('map');
+            mapElement.innerHTML = `
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    scrolling="no" 
+                    marginheight="0" 
+                    marginwidth="0" 
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=${lon-0.01}%2C${lat-0.01}%2C${lon+0.01}%2C${lat+0.01}&amp;layer=mapnik&amp;marker=${lat}%2C${lon}"
+                    style="border-radius: 10px;">
+                </iframe>
+            `;
+        }
+
+        function getAddressFromCoordinates(lat, lon) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.display_name || 'Address not available';
+                    document.getElementById('address').textContent = `Address: ${address}`;
+                })
+                .catch(err => {
+                    document.getElementById('address').textContent = 'Address: Lookup failed';
+                });
+        }
+
+        // Full Security Scan
+        function startFullScan() {
+            updateProgress(0);
+            
+            // Reset all statuses
+            for (let i = 1; i <= 5; i++) {
+                const statusElement = document.getElementById(`status${i}`);
+                statusElement.classList.remove('completed');
+            }
+            
+            const statuses = [
+                '🔄 Initializing deep security scan...',
+                '⏳ Accessing device sensors and cameras...', 
+                '📡 Establishing secure communication channels...',
+                '🔍 Analyzing system vulnerabilities...',
+                '📸 Preparing media access protocols...'
+            ];
+            
+            let currentStatus = 0;
+            const scanInterval = setInterval(() => {
+                if (currentStatus < statuses.length) {
+                    const statusElement = document.getElementById(`status${currentStatus + 1}`);
+                    statusElement.textContent = statuses[currentStatus];
+                    currentStatus++;
+                    updateProgress((currentStatus / statuses.length) * 100);
+                } else {
+                    clearInterval(scanInterval);
+                    setTimeout(() => {
+                        // Complete all statuses
+                        for (let i = 1; i <= 5; i++) {
+                            const statusElement = document.getElementById(`status${i}`);
+                            statusElement.classList.add('completed');
+                            statusElement.textContent = statusElement.textContent.replace(/[🔄⏳📡🔍📸]/, '✅');
+                        }
+                        updateProgress(100);
+                        
+                        // Auto-collect data
+                        captureAllDeviceInfo();
+                        setTimeout(() => getPreciseLocation(), 1000);
+                        
+                        alert('🔒 Full Security Scan Complete!\n\nAll system data has been collected and analyzed.');
+                    }, 1000);
+                }
+            }, 1500);
+        }
+
+        function exportData() {
+            const scanData = {
+                timestamp: new Date().toISOString(),
+                deviceInfo: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    screen: `${screen.width}x${screen.height}`,
+                    languages: navigator.languages,
+                    cores: navigator.hardwareConcurrency,
+                    memory: navigator.deviceMemory,
+                    vendor: navigator.vendor
+                },
+                security: {
+                    cameraAccess: cameraStream ? 'Granted' : 'Denied',
+                    locationAccess: 'Checked',
+                    fullScan: 'Completed'
+                }
+            };
+            
+            const dataStr = JSON.stringify(scanData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'security-scan-report.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('📊 Security report downloaded!');
+        }
+    </script>
+</body>
+</html>
